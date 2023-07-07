@@ -2,6 +2,7 @@ import express from 'express';
 import morgan from 'morgan';
 import mongoose from 'mongoose';
 import * as dotenv from 'dotenv';
+import cors from 'cors';
 
 import categoriesRoute from './routers/categories';
 import productsRouter from './routers/products';
@@ -12,6 +13,9 @@ import ordersRouter from './routers/orders';
 const app = express();
 dotenv.config({path:'./.env'});
 const api = process.env.API_URL;
+
+//Cors active
+app.use(cors());
 
 //middelware
 app.use(express.json());//app.use(bodyParser.json())
