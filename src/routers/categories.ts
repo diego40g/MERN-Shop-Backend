@@ -9,7 +9,17 @@ categoriesRoute.get('/',async(req,res)=>{
     if (!categoriesList){
         res.status(500).json({success: false})
     }
-    res.send(categoriesList)
+    res.status(200).send(categoriesList)
+})
+
+categoriesRoute.get('/:id', async(req,res) => {
+    const category = await Category.findById(req.params.id);
+
+    if(!category){
+        res.status(500).json({message: 'The category with the id was not found.'})
+    }
+
+    res.status(200).send(category)
 })
 
 categoriesRoute.post('/', async(req, res) => {
@@ -24,6 +34,22 @@ categoriesRoute.post('/', async(req, res) => {
         return res.status(404).send('The category cannot be created!!!')
     
     res.send(category);
+})
+
+categoriesRoute.put('/:id', async (req, res) => {
+    const category = await Category.findByIdAndUpdate(
+        req.params.id,
+        {
+            name: req.body.name,
+            icon: req.body.icon,
+            color: req.body.color,
+        },
+        { new: true }
+    )
+
+    if(!category)
+        return res.status(400).send('The category cannot be created!');
+    res.status(200).send(category);
 })
 
 categoriesRoute.delete('/:id', (req, res)=>{
