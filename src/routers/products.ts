@@ -1,5 +1,6 @@
 import express from 'express'
 import { Product } from '../models/product';
+import { Category } from '../models/category';
 
 const productsRouter = express.Router();
 
@@ -14,21 +15,29 @@ productsRouter.get(`/`, async(req, res) => {
 
     res.send(productList);
 });
-productsRouter.post(`/`, (req, res) => {
+productsRouter.post(`/`, async (req, res) => {
+    const category = await Category.findById(req.body.category);
+    if(!category) 
+        return res.status(400).send('Invalid Category')
+
     const product = new Product({
         name: req.body.name,
+        description: req.body.description,
+        richDescription: req.body.richDescription,
         image: req.body.image,
-        countInStock: req.body.countInStock
+        brand: req.body.brand,
+        price: req.body.price,
+        category: req.body.category,
+        countInStock: req.body.countInStock,
+        rating: req.body.rating,
+        numReviews: req.body.numReviews,
+        isFeatured: req.body.isFeatured
     })
 
-    product.save().then((createdProduct => {
-        res.status(201).json(createdProduct);
-    })).catch((err)=>{
-        res.status(500).json({
-            error: err,
-            success: false
-        })
-    })
+    const addProduct = await product.save();
+    if(!product)
+        return res.status(500).send('The product cannot be created')
+    res.status(201).json(addProduct);
 });
 
 export default productsRouter;
