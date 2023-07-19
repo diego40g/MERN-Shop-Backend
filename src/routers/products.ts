@@ -5,7 +5,40 @@ import { Category } from '../models/category';
 const productsRouter = express.Router();
 
 productsRouter.get(`/`, async(req, res) => {
+    const productList = await Product.find().populate('category');
+
+    if(!productList) {
+        res.status(500).json({
+            success: false
+        })
+    }
+
+    res.status(200).send(productList);
+});
+productsRouter.get(`/all`, async(req, res) => {
     const productList = await Product.find();
+
+    if(!productList) {
+        res.status(500).json({
+            success: false
+        })
+    }
+
+    res.status(200).send(productList);
+});
+productsRouter.get(`/name`, async(req, res) => {
+    const productList = await Product.find().select('name');
+
+    if(!productList) {
+        res.status(500).json({
+            success: false
+        })
+    }
+
+    res.status(200).send(productList);
+});
+productsRouter.get(`/image`, async(req, res) => {
+    const productList = await Product.find().select('name image -_id');
 
     if(!productList) {
         res.status(500).json({
