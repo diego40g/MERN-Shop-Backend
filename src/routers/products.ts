@@ -18,12 +18,13 @@ productsRouter.get(`/`, async(req, res) => {
 });
 productsRouter.get(`/byCategory`, async(req, res) => {
     //localhost:3000/api/v1/products/byCategory?categories=id1,id2
-    const categories: String | undefined = req.query.categories[0];
+    let filter = {};
+    const categories = req.query.categories as string;
     if(req.query.categories){
-        const filter = {category: req.query.categories.split(',')};
+        filter = {category: categories.split(',')};
     }
 
-    const productList = await Product.find({category: []}).populate('category');
+    const productList = await Product.find(filter).populate('category');
 
     if(!productList) {
         res.status(500).json({
