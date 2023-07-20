@@ -16,6 +16,23 @@ productsRouter.get(`/`, async(req, res) => {
 
     res.status(200).send(productList);
 });
+productsRouter.get(`/byCategory`, async(req, res) => {
+    //localhost:3000/api/v1/products/byCategory?categories=id1,id2
+    const categories: String | undefined = req.query.categories[0];
+    if(req.query.categories){
+        const filter = {category: req.query.categories.split(',')};
+    }
+
+    const productList = await Product.find({category: []}).populate('category');
+
+    if(!productList) {
+        res.status(500).json({
+            success: false
+        })
+    }
+
+    res.status(200).send(productList);
+});
 productsRouter.get(`/all`, async(req, res) => {
     const productList = await Product.find();
 
@@ -134,6 +151,27 @@ productsRouter.delete('/:id', (req, res)=>{
             error: err
         })
     })
+})
+productsRouter.get('/get/count',async (req,res) => {
+    const productCount = await Product.countDocuments()
+                                .then((count: any) => count)
+                                .catch((error)=>error);
+
+    if(!productCount){
+        return res.status(500).json({success: false})
+    }
+    res.send({
+        productCount: productCount
+    });
+})
+productsRouter.get(`/get/featured/:count`, async (req,res) => {
+    const count = req.params.count ? req.params.count: 0;
+    const products = await Product.find({isFeatured: true}).limit(+count);
+
+    if(!products) {
+        res.status(500).json({success: false})
+    }
+    res.send(products);
 })
 
 export default productsRouter;
