@@ -19,7 +19,7 @@ usersRouter.post(`/`, async (req: Request, res: Response) => {
         name: req.body.name,
         email: req.body.email,
         street: req.body.street,
-        passwordHash: bcrypt.hashSync(req.body.passwordHash, process.env.PASSWORD_HASH),
+        passwordHash: bcrypt.hashSync(req.body.passwordHash,Number.parseInt(process.env.PASSWORD_HASH!)),
         phone: req.body.phone,
         isAdmin: req.body.isAdmin,
         apartment: req.body.apartment,
