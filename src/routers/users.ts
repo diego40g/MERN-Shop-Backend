@@ -51,4 +51,13 @@ usersRouter.post(`/`, async (req: Request, res: Response) => {
     res.status(201).json(addUser)
 })
 
+usersRouter.post('/login', async (req: Request, res: Response) => {
+    const user = await User.findOne({email: req.body.email})
+    if(!user){
+        return res.status(400).send('The user not found');
+    }
+
+    return res.status(200).send(user);
+})
+
 export default usersRouter;
