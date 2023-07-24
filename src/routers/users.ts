@@ -7,6 +7,14 @@ dotenv.config({path:'./.env'});
 const usersRouter = express.Router();
 
 usersRouter.get(`/`, async (req: Request, res: Response): Promise<void> => {
+    const userList = await User.find().select('name phone email');
+
+    if(!userList) {
+        res.status(500).json({success: false})
+    } 
+    res.status(200).send(userList);
+});
+usersRouter.get(`/allData`, async (req: Request, res: Response): Promise<void> => {
     const userList = await User.find();
 
     if(!userList) {
@@ -14,6 +22,14 @@ usersRouter.get(`/`, async (req: Request, res: Response): Promise<void> => {
     } 
     res.status(200).send(userList);
 });
+usersRouter.get('/:id', async(req: Request,res:Response)=>{
+    const user = await User.findById(req.params.id).select('-passwordHash');
+
+    if(!user) {
+        res.status(500).json({message: 'The user with the given ID was not found.'})
+    } 
+    res.status(200).send(user);
+})
 usersRouter.post(`/`, async (req: Request, res: Response) => {
     const user = new User({
         name: req.body.name,
