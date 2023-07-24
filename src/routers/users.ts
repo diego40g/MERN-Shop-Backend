@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import userSchema, { User } from "../models/user";
+import jwt from 'jsonwebtoken';
 import * as dotenv from 'dotenv';
 
 dotenv.config({path:'./.env'});
@@ -57,8 +58,17 @@ usersRouter.post('/login', async (req, res) => {
         return res.status(400).send('The user not found');
     }
 
-    if(user && bcrypt.compareSync(req.body.password, user.passwordHash))
-        return res.status(200).send('User Authenticated')
+    if(user && bcrypt.compareSync(req.body.password, user.passwordHash)){
+        const secrect: string | undefined = process.env.JWT_SECRET;
+        const token = jwt.sign(
+            {
+                userId: user.id
+            },
+            secrect!,
+            {expiresIn: process.env.JWT_TIME_EXPIRES}
+        );
+        return res.status(200).send({user: user.email, token: token})
+    }
     else
         return res.status(400).send('Password is wrong!')
 })
