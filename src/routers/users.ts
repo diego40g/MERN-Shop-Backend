@@ -60,4 +60,20 @@ usersRouter.post('/login', async (req: Request, res: Response) => {
     return res.status(200).send(user);
 })
 
+usersRouter.put('/:id', async (req, res) => {
+    const user = await User.findByIdAndUpdate(
+        req.params.id,
+        {
+            name: req.body.name,
+            icon: req.body.icon,
+            color: req.body.color,
+        },
+        { new: true }
+    )
+
+    if(!user)
+        return res.status(400).send('The user cannot be created!');
+    res.status(200).send(user);
+})
+
 export default usersRouter;
