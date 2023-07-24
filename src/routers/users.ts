@@ -51,13 +51,16 @@ usersRouter.post(`/`, async (req: Request, res: Response) => {
     res.status(201).json(addUser)
 })
 
-usersRouter.post('/login', async (req: Request, res: Response) => {
+usersRouter.post('/login', async (req, res) => {
     const user = await User.findOne({email: req.body.email})
     if(!user){
         return res.status(400).send('The user not found');
     }
 
-    return res.status(200).send(user);
+    if(user && bcrypt.compareSync(req.body.password, user.passwordHash))
+        return res.status(200).send('User Authenticated')
+    else
+        return res.status(400).send('Password is wrong!')
 })
 
 usersRouter.put('/:id', async (req, res) => {
@@ -73,7 +76,7 @@ usersRouter.put('/:id', async (req, res) => {
 
     if(!user)
         return res.status(400).send('The user cannot be created!');
-    res.status(200).send(user);
+    return res.status(200).send(user);
 })
 
 export default usersRouter;
