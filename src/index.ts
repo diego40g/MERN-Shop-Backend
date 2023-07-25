@@ -2,6 +2,7 @@ import express from 'express';
 import morgan from 'morgan';
 import mongoose from 'mongoose';
 import * as dotenv from 'dotenv';
+import authJwt from './helpers/jwt'
 import cors from 'cors';
 
 import categoriesRoute from './routers/categories';
@@ -20,6 +21,8 @@ app.use(cors());
 //middelware
 app.use(express.json());//app.use(bodyParser.json())
 app.use(morgan('tiny'));
+
+app.use(authJwt);
 
 //routes
 app.use(`${api}/category`, categoriesRoute)
