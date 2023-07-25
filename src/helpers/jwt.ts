@@ -1,11 +1,12 @@
-import expressJwt from 'express-jwt';
+import { expressjwt } from "express-jwt";
+import * as dotenv from 'dotenv';
 
-function authJwt() {
-    const secrect = process.env.secret;
-    return expressJwt({
-        secrect: secrect,
-        algorithms: ['HS256']
-    })
-}
+dotenv.config({path:'./.env'});
+
+const secretKey = process.env.JWT_SECRET;
+const authJwt = expressjwt({ 
+    secret: secretKey!, 
+    algorithms: ['HS256'], 
+})
 
 export default authJwt;
