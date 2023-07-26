@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import morgan from 'morgan';
 import mongoose from 'mongoose';
 import * as dotenv from 'dotenv';
@@ -9,7 +9,6 @@ import categoriesRoute from './routers/categories';
 import productsRouter from './routers/products';
 import usersRouter from './routers/users';
 import ordersRouter from './routers/orders';
-
 
 const app = express();
 dotenv.config({path:'./.env'});
@@ -23,6 +22,12 @@ app.use(express.json());//app.use(bodyParser.json())
 app.use(morgan('tiny'));
 
 app.use(authJwt);
+
+app.use((err: Error, req: Request, res: Response) => {
+    if(err){
+        res.status(500).json({message: err})
+    }
+})
 
 //routes
 app.use(`${api}/category`, categoriesRoute)
