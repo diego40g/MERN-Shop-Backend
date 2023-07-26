@@ -1,8 +1,9 @@
-import express, { Request, Response, NextFunction  } from 'express';
+import express from 'express';
 import morgan from 'morgan';
 import mongoose from 'mongoose';
 import * as dotenv from 'dotenv';
-import authJwt from './helpers/jwt'
+import authJwt from './helpers/jwt';
+import { errorHandle } from './helpers/error_handle';
 import cors from 'cors';
 
 import categoriesRoute from './routers/categories';
@@ -24,12 +25,7 @@ app.use(morgan('tiny'));
 
 app.use(authJwt);
 
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-    if (err.name === "UnauthorizedError") {
-        return res.status(401).json({ message: "Unauthorized" });
-    }
-    next()
-})
+app.use(errorHandle);
 
 //routes
 app.use(`${api}/category`, categoriesRoute)
