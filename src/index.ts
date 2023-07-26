@@ -16,6 +16,7 @@ const api = process.env.API_URL;
 
 //Cors active
 app.use(cors());
+app.options('*',cors());
 
 //middelware
 app.use(express.json());//app.use(bodyParser.json())
