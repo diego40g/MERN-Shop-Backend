@@ -4,13 +4,15 @@ import * as dotenv from 'dotenv';
 dotenv.config({path:'./.env'});
 
 const secretKey = process.env.JWT_SECRET;
+const api = process.env.API_URL;
 const authJwt = expressjwt({ 
     secret: secretKey!, 
     algorithms: ['HS256'], 
 }).unless({
     path: [
-        '/api/v1/users/login',
-        '/api/v1/users/register'
+        {url: `${api}/products`, methods: ['GET', 'OPTIONS']},
+        `${api}/users/login`,
+        `${api}/users/register`
     ]
 })
 
