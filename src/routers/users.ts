@@ -52,6 +52,36 @@ usersRouter.post(`/`, async (req: Request, res: Response) => {
     res.status(201).json(addUser)
 })
 
+usersRouter.put('/:id', async (req, res) => {
+    const userExit = await User.findById(req.params.id);
+    let newPassword;
+    if(req.body.password){
+        newPassword = bcrypt.hashSync(req.body.password, process.env.PASSWORD_HASH);
+    }else{
+        newPassword = userExit?.passwordHash;
+    }
+    const user = await User.findByIdAndUpdate(
+        req.params.id,
+        {
+            name: req.body.name,
+            email: req.body.email,
+            passwordHash: newPassword,
+            phone: req.body.phone,
+            isAdmin: req.body.isAdmin,
+            street: req.body.street,
+            apartment: req.body.apartment,
+            zip: req.body.zip,
+            city: req.body.city,
+            country: req.body.country,
+        },
+        { new: true }
+    )
+
+    if(!user)
+        return res.status(400).send('The user cannot be created!');
+    return res.status(200).send(user);
+})
+
 usersRouter.post('/login', async (req, res) => {
     const user = await User.findOne({email: req.body.email})
     if(!user){
@@ -73,20 +103,26 @@ usersRouter.post('/login', async (req, res) => {
         return res.status(400).send('Password is wrong!')
 })
 
-usersRouter.put('/:id', async (req, res) => {
-    const user = await User.findByIdAndUpdate(
-        req.params.id,
-        {
-            name: req.body.name,
-            icon: req.body.icon,
-            color: req.body.color,
-        },
-        { new: true }
-    )
-
-    if(!user)
+usersRouter.post('/register', async (req, res)=>{
+    const user = new User({
+        name: req.body.name,
+        email: req.body.email,
+        passwordHash: bcrypt.hashSync(req.body.password, process.env.PASSWORD_HASH),
+        phone: req.body.phone,
+        isAdmin: req.body.isAdmin,
+        street: req.body.street,
+        apartment: req.body.apartment,
+        zip: req.body.zip,
+        city: req.body.city,
+        country: req.body.country,
+    })
+    const addUser = await user.save();
+    if(!addUser){
         return res.status(400).send('The user cannot be created!');
-    return res.status(200).send(user);
+    }
+    res.status(201).send(addUser);
 })
+
+
 
 export default usersRouter;
