@@ -10,9 +10,10 @@ const authJwt = expressjwt({
     algorithms: ['HS256'], 
 }).unless({
     path: [
-        {url: `${api}/products`, methods: ['GET', 'OPTIONS']},
-        `${api}/users/login`,
-        `${api}/users/register`
+        {url: /\/api\/v1\/product(.*)/, methods: ['GET', 'OPTIONS']},
+        {url: /\/api\/v1\/category(.*)/, methods: ['GET', 'OPTIONS']},
+        `${api}/user/login`,
+        `${api}/user/register`
     ]
 })
 
