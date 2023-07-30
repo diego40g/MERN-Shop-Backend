@@ -92,7 +92,8 @@ usersRouter.post('/login', async (req, res) => {
         const secrect: string | undefined = process.env.JWT_SECRET;
         const token = jwt.sign(
             {
-                userId: user.id
+                userId: user.id,
+                isAdmin: user.isAdmin, 
             },
             secrect!,
             {expiresIn: process.env.JWT_TIME_EXPIRES}
