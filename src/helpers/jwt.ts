@@ -8,6 +8,7 @@ const api = process.env.API_URL;
 const authJwt = expressjwt({ 
     secret: secretKey!, 
     algorithms: ['HS256'], 
+    isRevoked: revoked!,
 }).unless({
     path: [
         {url: /\/api\/v1\/product(.*)/, methods: ['GET', 'OPTIONS']},
@@ -16,5 +17,13 @@ const authJwt = expressjwt({
         `${api}/user/register`
     ]
 })
+
+const revoked = async(req: Request, payload: any, done: any) => {
+    if(!payload.isAdmin){
+        done(null, true);
+    }
+
+    done();
+}
 
 export default authJwt;
