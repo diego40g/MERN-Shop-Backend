@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import userSchema, { User } from "../models/user";
 import jwt from 'jsonwebtoken';
 import * as dotenv from 'dotenv';
+import { count } from 'console';
 
 dotenv.config({path:'./.env'});
 const usersRouter = express.Router();
@@ -81,6 +82,26 @@ usersRouter.put('/:id', async (req, res) => {
         return res.status(400).send('The user cannot be created!');
     return res.status(200).send(user);
 })
+usersRouter.delete('/:id', (req, res)=>{
+    User.findByIdAndRemove(req.params.id).then(user=>{
+        if(user) {
+            return res.status(200).json({
+                success: true,
+                message: 'The User is deleted!!!'
+            })
+        }else{
+            return res.status(404).json({
+                success: false,
+                message: 'User not found!!!'
+            })
+        }
+    }).catch(err => {
+        return res.status(500).json({
+            success: false,
+            error: err
+        })
+    })
+})
 
 usersRouter.post('/login', async (req, res) => {
     const user = await User.findOne({email: req.body.email})
@@ -124,6 +145,15 @@ usersRouter.post('/register', async (req, res)=>{
     res.status(201).send(addUser);
 })
 
+usersRouter.get('/get/count', async(req,res)=>{
+    const userCount = await User.countDocuments()
+                        .then((count:Number) => count)
+                        .catch((error:Error)=>error)
 
+    if(!userCount){
+        res.status(500).json({success: false})
+    }
+    res.status(200).send({userCount: userCount});
+})
 
 export default usersRouter;
