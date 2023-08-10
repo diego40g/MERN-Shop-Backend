@@ -19,6 +19,14 @@ ordersRouter.get(`/all`, async (req, res) =>{
     } 
     res.send(orderList);
 })
+ordersRouter.get(`/:id`, async (req, res) =>{
+    const order = await Order.findById(req.params.id).populate('user','name');
+
+    if(!order) {
+        res.status(500).json({success: false})
+    } 
+    res.send(order);
+})
 
 ordersRouter.post(`/`,async (req, res) => {
     const orderItemsIds = await Promise.all(
