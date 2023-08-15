@@ -1,6 +1,7 @@
 import express from 'express';
 import { Order } from "../models/order";
 import { OrderItem } from '../models/order-item';
+import IProduct from '../models/product';
 const ordersRouter = express.Router();
 
 ordersRouter.get(`/`, async (req, res) =>{
@@ -47,6 +48,24 @@ ordersRouter.post(`/`,async (req, res) => {
 
         return addOrderItem._id;
     }))
+
+
+    const totalPrices = await Promise.all(orderItemsIds.map(async (orderItemId:any) =>  {
+        const orderItem = await OrderItem.findById(orderItemId).populate('product');
+        if (!orderItem) {
+            console.log('Pedido no encontrado.');
+            return;
+          }
+      
+          // Verificar si el orderItem tiene un producto asociado
+          if (orderItem.product) {
+            const product = orderItem.product as IProduct;
+        console.log(orderItem);
+    }
+    const totalPrice = orderItem!.quantity //* orderItem!.product.price;
+        return totalPrice;
+    }))
+    //const totalPrice = totalPrices.reduce((a,b) => a +b , 0);
     
     const order = new Order({
         orderItems: orderItemsIds,
@@ -57,11 +76,11 @@ ordersRouter.post(`/`,async (req, res) => {
         country: req.body.country,
         phone: req.body.phone,
         status: req.body.status,
-        totalPrice: req.body.totalPrice,
+        //totalPrice: totalPrice,
         user: req.body.user
     })
 
-    await order.save();
+    //await order.save();
     if(!order)
         return res.status(500).send('The order cannot be created');
     res.status(201).json(order);

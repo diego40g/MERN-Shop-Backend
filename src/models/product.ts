@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
 
-interface IProduct extends Document {
+export default interface IProduct extends Document {
     name: string;
     description: string;
     richDescription: string;
@@ -16,7 +16,7 @@ interface IProduct extends Document {
     dateCreated: Date;
 }
 
-const productSchema: Schema<IProduct> = new mongoose.Schema({
+const productSchema: Schema<IProduct> = new mongoose.Schema<IProduct>({
     name: {
         type: String,
         require: true,
