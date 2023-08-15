@@ -80,9 +80,12 @@ ordersRouter.put('/:id',async (req, res) => {
     res.status(201).send(order);
 })
 
-ordersRouter.delete('/:id', (req,res) => {
-    Order.findByIdAndRemove(req.params.id).then(order => {
+ordersRouter.delete('/:id', async(req,res) => {
+    Order.findByIdAndRemove(req.params.id).then(async (order:any) => {
         if(order) {
+            await Promise.all(order.orderItems.map(async(orderItem:any) => {
+                await OrderItem.findByIdAndRemove(orderItem);
+            }))
             return res.status(200).json({
                 success: true,
                 message: 'The order is deleted!!!'
