@@ -20,7 +20,14 @@ ordersRouter.get(`/all`, async (req, res) =>{
     res.send(orderList);
 })
 ordersRouter.get(`/:id`, async (req, res) =>{
-    const order = await Order.findById(req.params.id).populate('user','name');
+    const order = await Order.findById(req.params.id)
+        .populate('user','name')
+        //.populate({path:'orderItems', populate: 'product'});
+        .populate({
+            path:'orderItems', populate: {
+                path: 'product', populate: 'category'
+            }
+        });
 
     if(!order) {
         res.status(500).json({success: false})
@@ -58,6 +65,19 @@ ordersRouter.post(`/`,async (req, res) => {
     if(!order)
         return res.status(500).send('The order cannot be created');
     res.status(201).json(order);
+})
+
+ordersRouter.put('/:id',async (req, res) => {
+    const order = await Order.findByIdAndUpdate(
+        req.params.id,
+        {
+            status: req.body.status
+        },
+        {new: true}
+    )
+    if(!order)
+        return res.status(400).send('The order cannot be created');
+    res.status(201).send(order);
 })
 
 export default ordersRouter;
