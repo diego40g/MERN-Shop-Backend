@@ -80,4 +80,25 @@ ordersRouter.put('/:id',async (req, res) => {
     res.status(201).send(order);
 })
 
+ordersRouter.delete('/:id', (req,res) => {
+    Order.findByIdAndRemove(req.params.id).then(order => {
+        if(order) {
+            return res.status(200).json({
+                success: true,
+                message: 'The order is deleted!!!'
+            })
+        } else {
+            return res.status(404).json({
+                success: false,
+                message: 'Order not found!!!'
+            })
+        }
+    }).catch(err => {
+        return res.status(500).json({
+            success: false,
+            error: err
+        })
+    })
+})
+
 export default ordersRouter;
