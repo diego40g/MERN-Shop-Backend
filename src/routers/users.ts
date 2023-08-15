@@ -3,7 +3,6 @@ import bcrypt from 'bcryptjs';
 import userSchema, { User } from "../models/user";
 import jwt from 'jsonwebtoken';
 import * as dotenv from 'dotenv';
-import { count } from 'console';
 
 dotenv.config({path:'./.env'});
 const usersRouter = express.Router();
