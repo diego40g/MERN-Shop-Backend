@@ -1,6 +1,6 @@
 import mongoose, { Document, Model, Schema } from 'mongoose';
 
-interface IOrder extends Document {
+export default interface IOrder extends Document {
     orderItems: Schema.Types.ObjectId;
     shippingAddress1: string;
     shippingAddress2: string;
