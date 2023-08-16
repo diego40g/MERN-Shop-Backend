@@ -1,6 +1,6 @@
 import express from 'express';
 import { Order } from "../models/order";
-import { OrderItem } from '../models/order-item';
+import IOrderItem, { OrderItem } from '../models/order-item';
 import IProduct from '../models/product';
 const ordersRouter = express.Router();
 
@@ -50,22 +50,26 @@ ordersRouter.post(`/`,async (req, res) => {
     }))
 
 
-    const totalPrices = await Promise.all(orderItemsIds.map(async (orderItemId:any) =>  {
-        const orderItem = await OrderItem.findById(orderItemId).populate('product');
+    const totalPrices: number[] = await Promise.all(orderItemsIds.map(async (orderItemId: string) => {
+        const orderItem: IOrderItem | null = await OrderItem.findById(orderItemId).populate('product');
+    
         if (!orderItem) {
-            console.log('Pedido no encontrado.');
-            return;
-          }
-      
-          // Verificar si el orderItem tiene un producto asociado
-          if (orderItem.product) {
-            const product = orderItem.product as IProduct;
-        console.log(orderItem);
-    }
-    const totalPrice = orderItem!.quantity //* orderItem!.product.price;
+            res.status(400).send(`The order was not found for the ID: ${orderItemId}`); 
+            return 0;
+        }
+    
+        if (!orderItem.product) {
+            res.status(400).send(`The product was not find for an order item ID: ${orderItemId}`);
+            return 0;
+        }
+    
+        const product: IProduct = orderItem.product as unknown as IProduct;
+        
+        const totalPrice: number = product.price * orderItem.quantity;
         return totalPrice;
-    }))
-    //const totalPrice = totalPrices.reduce((a,b) => a +b , 0);
+    }));
+    
+    const totalPrice: number = totalPrices.reduce((a: number, b: number) => a + b, 0);  
     
     const order = new Order({
         orderItems: orderItemsIds,
@@ -76,11 +80,11 @@ ordersRouter.post(`/`,async (req, res) => {
         country: req.body.country,
         phone: req.body.phone,
         status: req.body.status,
-        //totalPrice: totalPrice,
+        totalPrice: totalPrice,
         user: req.body.user
     })
 
-    //await order.save();
+    await order.save();
     if(!order)
         return res.status(500).send('The order cannot be created');
     res.status(201).json(order);
